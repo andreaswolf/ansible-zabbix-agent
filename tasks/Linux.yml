@@ -147,6 +147,21 @@
     - config
     - init
 
+- name: "Create directory for Zabbix agent runfile"
+  file:
+    path: "{{ zabbix_agent_pidfile | dirname }}"
+    mode: 0755
+    state: directory
+    owner: "{{ zabbix_agent_runas_user }}"
+  become: yes
+
+- name: "Set Zabbix agent PID file in systemd service"
+  lineinfile:
+    path: /lib/systemd/system/zabbix-agent.service
+    regex: "^PIDFile=.*"
+    line: "PIDFile={{ zabbix_agent_pidfile }}"
+  become: yes
+
 - name: "Create directory for PSK file if not exist."
   file:
     path: "{{ zabbix_agent_tlspskfile | dirname }}"
